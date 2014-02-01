@@ -1,6 +1,7 @@
 package vkmusicdownloader;
 
 import java.util.LinkedList;
+import javax.swing.JOptionPane;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -12,9 +13,9 @@ import org.json.simple.parser.JSONParser;
  */
 public class VKApi {
 
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
-    private static final String access_token = "a7885b378b2ec82f9884747debcd38dd7b17970ec40411ef8ebb9d5b4514806c001270fb78f38052091ee";
+    private String access_token;
     private RequestExecuter rqstExec;
     private boolean authorized;
 
@@ -23,33 +24,30 @@ public class VKApi {
         authorized = false;
     }
 
-    public boolean auth() {
-        rqstExec.clearParams();
-        rqstExec.addParam("client_id","4156308");
-        rqstExec.addParam("scope", "audio");
-        rqstExec.addParam("redirect_uri", "https://oauth.vk.com/blank.html");
-        rqstExec.addParam("display", "popup");
-        rqstExec.addParam("v", "5.7");
-        rqstExec.addParam("response_type","token");
-
-        try {
-            authorized = false;
-            StringBuffer response = rqstExec.sendPost("https://oauth.vk.com/authorize?");
-
-            if (DEBUG) System.out.println("\n Response: " + response);
-
-            if (response != null)
-                authorized = true;
+    
+    public boolean setATokenRequest(String token){
+        try{
+            token = token.replace("https://oauth.vk.com/blank.html#access_token=", "");
+            int lastChar = token.indexOf("&");
+            token = token.substring(0, lastChar);
+            if (DEBUG) System.out.println("token: "+token);
+            this.access_token = token;
+            return true;
+        } catch (Exception e){
+            JOptionPane.showMessageDialog(null, e.getMessage() , "Error" ,JOptionPane.ERROR_MESSAGE);
+            return false;
         }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        finally {
-            return authorized;
-        }
-        
     }
-
+        
+    public boolean auth2(){
+        if (access_token == null){
+            authorized = false;
+            return false;
+        }
+        authorized = true;
+        return true;
+    }
+    
     public StringBuffer searchAudio(String query, int count) {
 
         StringBuffer response = null;
@@ -84,11 +82,8 @@ public class VKApi {
 
             Track trck = new Track();
             trck.setAid((Long)trckJSON.get("aid"));
-            //trck.setAlbum_id((Long)trckJSON.get("album_id"));
             trck.setArtist((String)trckJSON.get("artist"));
             trck.setDuration((Long)trckJSON.get("duration"));
-            //trck.setGenre_id((Long)trckJSON.get("genre"));
-            //trck.setLyrics_id((Long)trckJSON.get("lyrics_id"));
             trck.setOwner_id((Long)trckJSON.get("owner_id"));
             trck.setTitle((String)trckJSON.get("title"));
             trck.setUrl((String)trckJSON.get("url"));
@@ -99,3 +94,34 @@ public class VKApi {
         return trckList;
     }
 }
+
+
+    /*
+    public boolean auth() {
+        rqstExec.clearParams();
+        rqstExec.addParam("client_id","4156308");
+        rqstExec.addParam("scope", "audio");
+        rqstExec.addParam("redirect_uri", "https://oauth.vk.com/blank.html");
+        rqstExec.addParam("display", "popup");
+        rqstExec.addParam("v", "5.7");
+        rqstExec.addParam("response_type","token");
+
+        try {
+            authorized = false;
+            StringBuffer response = rqstExec.sendPost("https://oauth.vk.com/authorize?");
+
+            if (DEBUG) System.out.println("\n Response: " + response);
+
+            if (response != null)
+                authorized = true;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally {
+            return authorized;
+        }
+        
+    }
+*/
+    

@@ -27,6 +27,7 @@ public class GUI {
     private JButton button_search; 
     private JButton button_save;
     private JButton button_info;
+    private JButton button_auth;
     private JLabel label_cntTracks;
     private JTextField textField_search;
     private JScrollPane jScrollPane1;
@@ -45,12 +46,13 @@ public class GUI {
 
     GUI(){
 
-        gui_adp= new GUI_adapter(this);
+        gui_adp = new GUI_adapter(this);
 
         mainFrame       = new JFrame();
         button_save     = new JButton();
         button_info     = new JButton();
         button_search   = new JButton();
+        button_auth     = new JButton();
         jScrollPane1    = new JScrollPane();
         jTable1         = new JTable();
         label_cntTracks = new JLabel();
@@ -66,14 +68,18 @@ public class GUI {
 
         button_search.setText("Search");
         button_search.setSize(100,25);
-        button_search.setEnabled(true);
+        button_search.setEnabled(false);
         button_search.addActionListener(new Button_search_Listener());
 
-        
         button_save.setText("Save");
         button_save.setSize(100,25);
         button_save.setEnabled(true);
         button_save.addActionListener(new Button_save_Listener());
+        
+        button_auth.setText("Auth");
+        button_auth.setSize(100,25);
+        button_auth.setEnabled(true);
+        button_auth.addActionListener(new Button_auth_Listener());
 
         button_info.setText("Info");
         button_info.setSize(100,25);
@@ -108,6 +114,7 @@ public class GUI {
 
         jPanel1.setLayout(new FlowLayout());
         jPanel1.add(button_info);
+        jPanel1.add(button_auth);
         jPanel1.add(button_search);
         jPanel1.add(textField_search);
         jPanel1.add(button_save);
@@ -119,8 +126,12 @@ public class GUI {
         mainFrame.setLocationRelativeTo(null);
         mainFrame.setVisible(true);
     }
-
-
+    
+    public void rollback(){
+        resetTable();
+        button_search.setEnabled(false);
+    }
+    
     public void clearTable(){
         TM.setRowCount(0);
     }
@@ -157,6 +168,19 @@ public class GUI {
     public void setLabel(String txt){
         label_cntTracks.setText(txt);
         label_cntTracks.repaint();
+    }
+
+    public void setSearchEnabled(boolean enabled){
+        button_search.setEnabled(enabled);
+    }
+    
+    private class Button_auth_Listener implements ActionListener {
+
+        public Button_auth_Listener() {}
+
+        public void actionPerformed(ActionEvent e) {
+            new VKAuth(gui_adp);
+        }
     }
     /*
     public JCheckBox[] getCheckList(){

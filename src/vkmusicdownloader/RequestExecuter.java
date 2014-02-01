@@ -17,7 +17,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class RequestExecuter {
 
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
     private final String USER_AGENT = "Mozilla/5.0";
     private LinkedHashMap paramsMap;
 
@@ -47,7 +47,6 @@ public class RequestExecuter {
 			response.append(inputLine);
 		}
 		in.close();
-
                 
                 return response;
 	}
@@ -59,7 +58,8 @@ public class RequestExecuter {
 		URL obj = new URL(url);
 		HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
                 con.setFollowRedirects(true);
-                
+                con.setInstanceFollowRedirects(true);
+
                 if (DEBUG) {
                     System.out.println("URL: " + url);
                     System.out.println("params: " + params);
@@ -67,30 +67,19 @@ public class RequestExecuter {
 
 		con.setRequestMethod("POST");
 		con.setRequestProperty("User-Agent", USER_AGENT);
-		//con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
                 con.setRequestProperty("Accept-Charset", "UTF-8");
                 con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
                 con.setRequestProperty("charset", "UTF-8");
 
 		con.setDoOutput(true);
-                /* // doesnt work with UTF8 requests
-		DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-		wr.writeBytes(params);
-		wr.flush();
-		wr.close();
-                */
+                
                 con.getOutputStream().write(params.getBytes("UTF-8"));
+                con.connect();
+                // catching auth redirect was failed
+                //URL redirected = con.getURL(); 
 
-                /* // catching auth redirect was failed
-                URL redirected = con.getURL();
-                if (DEBUG) {
-                    System.out.println("redirected: " + redirected.toString());
-                    System.out.println("response: " + con.getResponseMessage());
-                }
-                 */
 		//if (con.getResponseCode() != 200)
                    // return null;
-
 
 		BufferedReader in = new BufferedReader(
 		        new InputStreamReader(con.getInputStream()));

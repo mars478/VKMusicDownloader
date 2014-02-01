@@ -1,7 +1,6 @@
 package vkmusicdownloader;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.LinkedList;
 import javax.swing.JCheckBox;
@@ -29,7 +28,7 @@ public class GUI_adapter {
         String req = gui.getTxtSearch();
 
         try {
-            llt = vka.makeTrackList(vka.searchAudio(req, 1000));
+            llt = vka.makeTrackList(vka.searchAudio(req, 500));
 
             cbx = new JCheckBox[llt.size()];
             String[][] data = new String[llt.size()][4];
@@ -40,17 +39,12 @@ public class GUI_adapter {
                 cbx[i].setSelected(true);
 
                 Track tmp = llt.get(i);
-
                 data[i] = new String[] {""+(i+1),tmp.getArtist(),tmp.getTitle(),""+tmp.getDuration()};
             }
-
-
             //gui.setCheckList(cbx);
             gui.clearTable();
             gui.fillTable(llt.size(), data, cbx);
             gui.setLabel("Tracks:"+llt.size());
-
-
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage() , "Error" ,JOptionPane.ERROR_MESSAGE);
         }
@@ -60,7 +54,6 @@ public class GUI_adapter {
     public void doSave() {
 
         try {
-
             gui.setLabel("Downloading...");
             JFileChooser fc = new JFileChooser();
             fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -77,7 +70,6 @@ public class GUI_adapter {
                     File temp = new File(dir.getAbsoluteFile()+"\\"+checkSymbols(trck.getTitle())+".mp3");
                     FileUtils.copyURLToFile(new URL(trck.getUrl()), temp);
                 }
-
             }
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage() , "Error" ,JOptionPane.ERROR_MESSAGE);
@@ -100,5 +92,13 @@ public class GUI_adapter {
         if (inp.length()>50)
             inp = inp.substring(0, 49);
         return inp;
+    }
+    
+    public VKApi getVKA(){
+        return vka;
+    }
+    
+    public GUI getGUI(){
+        return gui;
     }
 }
